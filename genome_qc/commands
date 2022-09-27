@@ -1,1 +1,10 @@
+###BUSCO scores of genome assemblies
+
+#BUSCO for flye assembly using PacBio and Nanopore long read data
+#metazoa
+busco -i ./assembly.fasta -o ./whelk_genome_flye_nanopac_08282022_metazoabusco -m genome -l metazoa_odb10 --cpu 60
+
+#mollusca
+busco -i ./assembly.fasta -o ./whelk_genome_flye_nanopac_08282022_molluscabusco -m genome -l mollusca_odb10 --cpu 60
+
 
