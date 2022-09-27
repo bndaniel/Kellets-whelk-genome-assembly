@@ -1,5 +1,9 @@
 #Genome assemblies 
 
-###Flye assembly command for nanopore and pacbio
+### Flye assembly command for nanopore and pacbio
 flye --nano-hq ./pacbio_reads/m64047_220322_210536.ccs.fastq.gz ./pacbio_reads/m64047_220522_063338.ccs.fastq.gz ./pacbio_reads/m64047_210924_101806.ccs.fastq.gz ./nanopore_reads/basecalling_ligationseq/pass/combined.fastq ./nanopore_reads/basecalling_ligationseq2/pass/combined2.fastq --out-dir whelk_genome_flye_nanopac_08282022 --threads 100
+
+### Smartdenovo assembly commands for nanopore and pacbio data
+smartdenovo.pl -t 60 -p pb1 -c 1 ./combinedlrseq.fa.gz > smartdenovo_assembly_nanopac_09012022.mak
+make -f ./smartdenovo_assembly_nanopac_09012022.mak
 
