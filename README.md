@@ -1,1 +1,1 @@
-# Kk-bioinformatics
+# Kellet's whelk Genome Assembly
