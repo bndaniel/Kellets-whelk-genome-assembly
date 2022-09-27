@@ -22,6 +22,6 @@ De novo genome assembly!.... Yada yada heterozygosity!.... Yada yada next gen se
 
 Genome assembly commands
 <br>
-https://github.com/bndaniel/Kellets-whelk-genome-assembly#:~:text=5%20minutes%20ago-,genome_assembly,-Update%20commands
+https://github.com/bndaniel/Kellets-whelk-genome-assembly/tree/main/genome_assembly
 
 insert figure of busco comparison
