@@ -14,3 +14,13 @@ De novo genome assembly!.... Yada yada heterozygosity!.... Yada yada next gen se
 **Results:** Our genome is like super legitness.
 
 **Conclusion:** You wish you had a genome like our genome. <sub>**Snap, Crackle, and POP**</sub>
+
+<br>
+<br>
+
+### Genome assembly comparison
+
+Genome assembly commands
+https://github.com/bndaniel/Kellets-whelk-genome-assembly#:~:text=5%20minutes%20ago-,genome_assembly,-Update%20commands
+
+insert figure of busco comparison
