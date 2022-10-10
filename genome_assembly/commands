@@ -7,8 +7,13 @@ flye --nano-hq ./pacbio_reads/m64047_220322_210536.ccs.fastq.gz ./pacbio_reads/m
 smartdenovo.pl -t 60 -p pb1 -c 1 ./combinedlrseq.fa.gz > smartdenovo_assembly_nanopac_09012022.mak
 make -f ./smartdenovo_assembly_nanopac_09012022.mak
 
-### MaSuRCA assembly config file and command for Illumina Nanopore and Pacbio Data (long read data in combinedlrseq.fa.gz)
+###Canu Assembly commands for nanopore and pacbio data
 
+
+
+
+
+### MaSuRCA assembly config file and command for Illumina Nanopore and Pacbio Data (long read data in combinedlrseq.fa.gz)
 #config.txt
 # configuration file (10/04/2022)
 DATA
@@ -33,6 +38,6 @@ SOAP_ASSEMBLY=0
 FLYE_ASSEMBLY=1
 END
 
-
+#commands for Masurca assembly
 ./MaSuRCA-4.0.9/bin/masurca ./masurca_assembly_10042022/config.txt
 ./assemble.sh
