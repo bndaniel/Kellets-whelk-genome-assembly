@@ -7,3 +7,32 @@ flye --nano-hq ./pacbio_reads/m64047_220322_210536.ccs.fastq.gz ./pacbio_reads/m
 smartdenovo.pl -t 60 -p pb1 -c 1 ./combinedlrseq.fa.gz > smartdenovo_assembly_nanopac_09012022.mak
 make -f ./smartdenovo_assembly_nanopac_09012022.mak
 
+### MaSuRCA assembly config file and command for Illumina Nanopore and Pacbio Data (long read data in combinedlrseq.fa.gz)
+
+#config.txt
+# configuration file (10/04/2022)
+DATA
+PE = pe 500 50 /large/whelk/genome/novaseq_reads/R1_paired.fastq.gz /large/whelk/genome/novaseq_reads/R2_paired.fastq.gz
+NANOPORE = /large/whelk/genome/combinedlrseq.fa.gz
+END
+PARAMETERS
+EXTEND_JUMP_READS=0
+GRAPH_KMER_SIZE = auto
+USE_LINKING_MATES = 0
+USE_GRID=0
+GRID_ENGINE=SGE
+GRID_QUEUE=all.q
+GRID_BATCH_SIZE=500000000
+LHE_COVERAGE=25
+LIMIT_JUMP_COVERAGE = 300
+CA_PARAMETERS =  cgwErrorRate=0.15
+CLOSE_GAPS=1
+NUM_THREADS = 64
+JF_SIZE = 74000000000
+SOAP_ASSEMBLY=0
+FLYE_ASSEMBLY=1
+END
+
+
+./MaSuRCA-4.0.9/bin/masurca ./masurca_assembly_10042022/config.txt
+./assemble.sh
