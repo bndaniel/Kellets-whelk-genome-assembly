@@ -1,0 +1,34 @@
+### R scripts for genome assembly comparisons and QC
+
+#logN50 vs log L50 using genome assembly comparison csv
+
+library(ggplot2)
+
+setwd("~/Desktop")
+GC <-read.csv("Mollusk Genome_transcriptome Assemblies.csv", header = TRUE)
+
+
+colors <- c("#FDAE61", # Orange
+            "#D9EF8B", # Light green
+            "#66BD63") # Darker green
+
+reordered_groups <- factor(GC$Sequencing.type, levels = c("Short",
+                                             "Long",
+                                             "Short and Long",
+                                             ""))
+# Scatter plot
+plot(GC$log.N50, GC$log.L50,
+     pch = 19,
+     col = colors[reordered_groups])
+
+# Legend
+legend("topright",
+       legend = c("Short", "Long", "Short and Long"),
+       pch = 19,
+       col = colors)
+
+#trendline
+abline(lm(GC$log.N50 ~ GC$log.L50))
+
+
+
