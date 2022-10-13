@@ -10,11 +10,18 @@ make -f ./smartdenovo_assembly_nanopac_09012022.mak
 ### Canu Assembly commands for nanopore and pacbio data
 
 
-
+????
 
 
 ### MaSuRCA assembly config file and command for Illumina Nanopore and Pacbio Data (long read data in combinedlrseq.fa.gz)
-#config.txt
+# need bzip2, numactl, and boost to run Masurca - will end in error during pre correction of long reads if absent
+
+conda install -c anaconda bzip2
+conda install -c brown-data-science numactl
+conda install -c conda-forge boost
+
+# uploaded MaSuRCA4.0.9 directly and created config file 
+# config.txt 
 # configuration file (10/04/2022)
 DATA
 PE = pe 500 50 /large/whelk/genome/novaseq_reads/R1_paired.fastq.gz /large/whelk/genome/novaseq_reads/R2_paired.fastq.gz
@@ -38,6 +45,7 @@ SOAP_ASSEMBLY=0
 FLYE_ASSEMBLY=1
 END
 
-#commands for Masurca assembly
+#command for Masurca assembly
 ./MaSuRCA-4.0.9/bin/masurca ./masurca_assembly_10042022/config.txt
+
 ./assemble.sh
