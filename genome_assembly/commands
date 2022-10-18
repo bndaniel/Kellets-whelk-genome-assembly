@@ -45,7 +45,12 @@ SOAP_ASSEMBLY=0
 FLYE_ASSEMBLY=1
 END
 
-#command for Masurca assembly
+# command for Masurca assembly
 ./MaSuRCA-4.0.9/bin/masurca ./masurca_assembly_10042022/config.txt
 
 ./assemble.sh
+
+# assembly restart by runing both commands again (creates new assemble.sh based on what files have already be constructed): 
+./MaSuRCA-4.0.9/bin/masurca ./masurca_assembly_10042022/config.txt
+
+./assemble.sh 
