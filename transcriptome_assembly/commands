@@ -1,0 +1,63 @@
+# de novo transcriptome assembly commands
+
+# DATA
+#58 kellet's whelk egg capsules had full transcriptome sequencing - resulting in ~___ Gb of data for the transcriptome assembly
+________________________________________________________________________________________________________________________________________
+# Raw sequence trimmming 
+#Trimming was conducted on all samples except for duplicates (“ ”_2) using Trimmomatic 0.39 IlluminaClip with parameters: leading:3 trailing:3 (removal of first and last three base pairs), slidingwindow: 4:15 (scans the read with a 4-base wide sliding window, cutting when the average quality per base drops below 15), minlen:36 (drop reads with less than 36 base pair length)
+# command for trimming using trimmomatic
+
+ILLUMINACLIP:/usr/local/Trimmomatic-0.39/adapters/TruSeq3-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36 :::: sample_list.txt > trimmomatic.out 2>trimmomatic.err
+
+# see full data processing at https://github.com/calpoly-bioinf/whelk_processing_analysis
+________________________________________________________________________________________________________________________________________
+# RNAspades transcriptome assembly
+# using bioconda to upload SPAdes genome assembler v3.15.4
+
+conda create -n spades
+conda activate spades
+conda install -c bioconda spades
+spades.py
+
+#command for transcriptome assembly
+spades.py --rna -1 ./kw_fastq_all_trimmed/combined_1_paired.fq.gz -2 ./kw_fastq_all_trimmed/combined_2_paired.fq.gz -t 64 -m 750 -o rnaspades_04302022
+
+________________________________________________________________________________________________________________________________________
+
+# Trinity transcriptome assembly
+#creating left and right datasets from paired end combined sequence files from trimmomatic output
+
+LEFT=$SRC_DATA_DIR/combined_1_paired.fq.gz
+RIGHT=$SRC_DATA_DIR/combined_2_paired.fq.gz
+
+#command for trinity assembly (note: FORCE was used to complete assembly)
+docker run --rm -v `pwd`/..:`pwd`/.. trinityrnaseq/trinityrnaseq Trinity --seqType fq --left $LEFT --right $RIGHT --CPU 32 --max_memory 700G --output `pwd`/trinity_assembly_1 --FORCE > trinity_assembly.log 2>&1
+
+________________________________________________________________________________________________________________________________________
+
+# BUSCO analysis of Transcriptome assemblies 
+
+# RNAspades transcriptome
+#metazoa dataset (C:99%)
+docker run -u $(id -u) -v $(pwd):/busco_wd ezlabgva/busco:v5.3.2_cv1 busco -i ./transcripts.fasta -o ./whelk_spades_busco_output_05032022 -m transcriptome  -l metazoa_odb10 --cpu 60
+
+#mollusca dataset (C:90.5%)
+docker run -u $(id -u) -v $(pwd):/busco_wd ezlabgva/busco:v5.3.2_cv1 busco -i ./transcripts.fasta -o ./whelk_spades_busco_output_05032022_mullusca -m transcriptome  -l mollusca  --cpu 250
+
+
+# Trinity transcriptome 
+#metazoa dataset (C:98.4%)
+docker run -u $(id -u) -v $(pwd):/busco_wd ezlabgva/busco:v5.3.2_cv1 busco -i ./trinity_assembly_1.Trinity.fasta -o ./whelk_trinity_busco_output_05042022_metazoa -m transcriptome  -l metazoa_odb10 --cpu 250
+
+#mollusca dataset (C:88.2%)
+docker run -u $(id -u) -v $(pwd):/busco_wd ezlabgva/busco:v5.3.2_cv1 busco -i ./trinity_assembly_1.Trinity.fasta -o ./whelk_trinity_busco_output_05042022_mollusca -m transcriptome  -l mollusca --cpu 250
+
+________________________________________________________________________________________________________________________________________
+# filtering of RNAspades transcriptome???
+
+
+
+
+
+
+
