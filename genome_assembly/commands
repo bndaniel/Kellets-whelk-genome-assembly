@@ -7,18 +7,13 @@ flye --nano-hq ./pacbio_reads/m64047_220322_210536.ccs.fastq.gz ./pacbio_reads/m
 smartdenovo.pl -t 60 -p pb1 -c 1 ./combinedlrseq.fa.gz > smartdenovo_assembly_nanopac_09012022.mak
 make -f ./smartdenovo_assembly_nanopac_09012022.mak
 
-### Canu Assembly commands for nanopore and pacbio data
-
-probs not???
-
-
 ### Spades assembly commands for illumina novaseq data
+spades.py --pe1-1 ./genome/novaseq_reads/R1_paired.fastq --pe1-2 ./genome/novaseq_reads/R2_paired.fastq \
+-t 100 -m 900 -o ./genome/spades_assembly_12022022
 
-???
 
 ### ABySS assembly commands for illumina novaseq data
-
-???
+abyss-pe name=abyss_genome_(date) j=60 k=80 B=500G in='./genome/novaseq_reads/R1_paired.fastq ./genome/novaseq_reads/R2_paired.fastq'
 
 ### MaSuRCA assembly config file and command for Illumina Nanopore and Pacbio Data (long read data in combinedlrseq.fa.gz)
 # need bzip2, numactl, and boost to run Masurca - will end in error during pre correction of long reads if absent
