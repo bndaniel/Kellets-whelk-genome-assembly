@@ -151,3 +151,5 @@ conda install -c conda-forge matplotlib
 # BESST scaffolding
 ./runBESST -c /large/whelk/genome/besst_rna/default_param/pass1/Scaffolds-pass1.fa -f /large/whelk/genome/hisat2/rnascaf_genome/novaseq_sorted.bam -o /large/whelk/genome/final_scaf.fasta -orientation fr
 
+# busco
+busco -i /large/whelk/genome/final_scaf.fasta -o ./final_genome_scaf_051523_metazoabusco -m genome -l metazoa_odb10 --cpu 100 --update-data -f
