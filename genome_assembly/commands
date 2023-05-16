@@ -153,3 +153,36 @@ conda install -c conda-forge matplotlib
 
 # busco
 busco -i /large/whelk/genome/final_scaf.fasta -o ./final_genome_scaf_051523_metazoabusco -m genome -l metazoa_odb10 --cpu 100 --update-data -f
+
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+# running quast on each genome assembly for statistics
+
+# spades
+quast -o /large/whelk/genome/quast_final/spades -t 40 --large /large/whelk/genome/abyss_assembly_allnova_04302023/assemblies/abyss_assembly_03312023/abyss_genome_03312023-contigs.fa
+
+# flye
+quast -o /large/whelk/genome/quast_final/flye -t 40 --large /large/whelk/genome/whelk_genome_flye_nanopac_fastp_04252023/assembly.fasta
+
+# rna-seq scaf
+quast -o /large/whelk/genome/quast_final/rna -t 40 --large /large/whelk/genome/besst_rna/default_param/pass1/Scaffolds-pass1.fa
+
+#rna+dna-seq scaf
+quast -o /large/whelk/genome/quast_final/rna_dna -t 40 --large /large/whelk/genome/final_scaf.fasta
+
+____________________________________________________________________________________________________________________________________________________________
+
+# comparison to other assemblies
+
+# download all the assemblies?
+
+run BUSCO on all of them... and quast... should be enough statistics
+
+
+
+
+
+
+
+
+
