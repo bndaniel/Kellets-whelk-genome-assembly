@@ -65,6 +65,55 @@ flye --pacbio-corr /large/whelk/genome/masurca_assembly_10292022/mr.99.17.15.0.0
 old stuff ^^^
 ____________________________________________________________________________________________________________________________________________________________
 
+### read basecalling and corrections
+# basecalling Nanopore MinION reads
+# Guppy V
+tar -xf ont-guppy-cpu_6.2.1_linux64.tar
+
+# running basecalling on first MinION sequencing run
+./ont-guppy-cpu/bin/guppy_basecaller --input_path ./ligationseq_08062022 --save_path ./basecalling_ligationseq --cpu_threads_per_caller 60 --config dna_r9.4.1_450bps_hac.cfg
+
+# running basecalling on second MinION sequencing run
+./ont-guppy-cpu/bin/guppy_basecaller --input_path ./ligationseq2_08242022 --save_path ./basecalling_ligationseq2 --cpu_threads_per_caller 60 --num_callers 3 --config dna_r9.4.1_450bps_hac.cfg
+
+- - - - - - - - - - - - - - - - - - - - - - - 
+# quality trimming MinION and NovaSeq reads with Fastp
+# fastp V
+
+# fastp on first MinION run
+fastp -i ./genome/nanopore_reads/basecalling_ligationseq/pass/combined.fastq -o ./genome/nanopore_reads/basecalling_ligationseq/pass/fastp_combined.fastq -f 10
+
+# fastp on second MinION run
+fastp -i ./genome/nanopore_reads/basecalling_ligationseq2/pass/combined2.fastq -o ./genome/nanopore_reads/basecalling_ligationseq2/pass/fastp_combined2.fastq -f 10
+
+# fastp on Novaseq run
+fastp -i ./02_S1_L001_R1_001.fastq.gz -I ./02_S1_L001_R2_001.fastq.gz -o ./fastp_out.R1_10032022.fq.gz -O ./fastp_out.R2_10032022.fq.gz
+
+- - - - - - - - - - - - - - - - - - - - - - - 
+### read quality check
+
+# fastqc on each read type
+
+# novaseq raw and corrected
+fastqc ./novaseq_reads/02_S1_L001_R1_001.fastq.gz -o ./FASTQC/ -t 30
+fastqc ./novaseq_reads/02_S1_L001_R2_001.fastq.gz -o ./FASTQC/ -t 30
+
+#nanopore raw and corrected
+fastqc ./nanopore_reads/basecalling_ligationseq/pass/fastp_combined.fastq -o ./FASTQC/ -t 30
+fastqc ./nanopore_reads/basecalling_ligationseq/pass/fastp_combined2.fastq -o ./FASTQC/ -t 30
+
+# pacbio
+fastqc ./pacbio_reads/m64047_210924_101806.ccs.fastq.gz -o ./FASTQC/ -t 30
+fastqc ./pacbio_reads/m64047_220322_210536.ccs.fastq.gz -o ./FASTQC/ -t 30
+fastqc ./pacbio_reads/m64047_220522_063338.ccs.fastq.gz -o ./FASTQC/ -t 30
+
+# multiqc on each read type
+multiqc /large/whelk/genome/FASTQC/fastqc_nanopore
+multiqc /large/whelk/genome/FASTQC/fastqc_novaseq
+multiqc /large/whelk/genome/FASTQC/fastqc_pacbio
+
+____________________________________________________________________________________________________________________________________________________________
+
 # spades assembly on corrected short reads
 conda create -n abyss
 conda activate abyss
@@ -123,9 +172,6 @@ samtools merge all.bam /large/whelk/genome/hisat2/sorted_bam/*.bam
 #indexing combined bam file
 samtools index all.bam  all.bam.bai
 
-# downloading RNA_BESST
-???
-
 # RNA_BESST scaffolding
 python Main.py 1 -c /large/whelk/genome/whelk_genome_flye_nanopac_fastp_04252023/assembly.fasta -f /large/whelk/genome/hisat2/sorted_bam/all.bam -o /large/whelk/genome/besst_rna 
 
@@ -172,6 +218,58 @@ quast -o /large/whelk/genome/quast_final/rna_dna -t 40 --large /large/whelk/geno
 
 ____________________________________________________________________________________________________________________________________________________________
 
+# BUSCO plot comparing genome assemblies
+
+
+
+
+
+
+
+
+
+
+
+
+
+____________________________________________________________________________________________________________________________________________________________
+
+# read alignment for circos plot
+
+# create genome index files for mapping
+hisat2-build /large/whelk/genome/final_scaf.fa genome
+
+# hisat2 mapping
+# novaseq
+hisat2 -x genome -1 /large/whelk/genome/novaseq_reads/fastp_out.R1_10032022.fq -2 /large/whelk/genome/novaseq_reads/fastp_out.R2_10032022.fq -S output_novaseq.bam
+
+# pacbio
+hisat2 -f -x genome -U /large/whelk/genome/pacbio_reads/m64047_210924_101806.ccs.fastq.gz -S /large/whelk/genome/hisat2/final_genome/pacbio_1.bam --no-spliced-alignment
+hisat2 -f -x genome -U /large/whelk/genome/pacbio_reads/m64047_220322_210536.ccs.fastq.gz -S /large/whelk/genome/hisat2/final_genome/pacbio_2.bam --no-spliced-alignment
+hisat2 -f -x genome -U /large/whelk/genome/pacbio_reads/m64047_220522_063338.ccs.fastq.gz -S /large/whelk/genome/hisat2/final_genome/pacbio_3.bam --no-spliced-alignment
+
+# nanopore
+hisat2 -f -x genome -U /large/whelk/genome/nanopore_reads/basecalling_ligationseq/pass/fastp_combined.fastq -S /large/whelk/genome/hisat2/final_genome/pacbio_3.bam --no-spliced-alignment
+hisat2 -f -x genome -U /large/whelk/genome/nanopore_reads/basecalling_ligationseq2/pass/fastp_combined2.fastq -S /large/whelk/genome/hisat2/final_genome/pacbio_3.bam --no-spliced-alignment
+
+# combining all bam files for circos plot
+samtools merge all_reads.bam root/large/whelk/genome/hisat2/final_genome/*.bam
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+all below should be where cassidy put it
 # comparison to other assemblies
 
 # download all the assemblies?
