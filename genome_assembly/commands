@@ -253,7 +253,7 @@ hisat2 -f -x genome -U /large/whelk/genome/nanopore_reads/basecalling_ligationse
 hisat2 -f -x genome -U /large/whelk/genome/nanopore_reads/basecalling_ligationseq2/pass/fastp_combined2.fastq -S /large/whelk/genome/hisat2/final_genome/pacbio_3.bam --no-spliced-alignment
 
 # combining all bam files for circos plot
-samtools merge all_reads.bam root/large/whelk/genome/hisat2/final_genome/*.bam
+samtools merge all_reads.bam /large/whelk/genome/hisat2/final_genome/*.bam
 
 
 
