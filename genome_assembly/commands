@@ -257,7 +257,15 @@ samtools merge all_reads.bam /large/whelk/genome/hisat2/final_genome/*.bam
 
 
 
+____________________________________________________________________________________________________________________________________________________________
+### Read mapping with qualimap (stats for each read type)
+conda create -n qualimap
+conda install -c bioconda qualimap
 
+# running qualimap
+qualimap bamqc -bam /large/whelk/genome/hisat2/final_genome/novaseq_sorted.bam -outfile /large/whelk/genome/qualimap -nt 40 --java-mem-size=700G
+qualimap bamqc -bam /large/whelk/genome/hisat2/final_genome/nanopore_sorted.bam -outfile /large/whelk/genome/qualimap
+qualimap bamqc -bam /large/whelk/genome/hisat2/final_genome/pacbio_sorted.bam -outfile /large/whelk/genome/qualimap
 
 
 
