@@ -236,7 +236,7 @@ ________________________________________________________________________________
 
 # read alignment for circos plot
 
-# create genome index files for mapping
+# create genome index files for mapping (in root/large/whelk/genome/hisat2/final_genome)
 hisat2-build /large/whelk/genome/final_scaf.fa genome
 
 # hisat2 mapping
@@ -259,14 +259,31 @@ samtools merge all_reads.bam /large/whelk/genome/hisat2/final_genome/*.bam
 
 ____________________________________________________________________________________________________________________________________________________________
 ### Read mapping with qualimap (stats for each read type)
+
+# alignment of all reads from each read type
+#novaseq:
+hisat2 -x genome -1 /large/whelk/genome/novaseq_reads/fastp_out.R1_10032022.fq -2 /large/whelk/genome/novaseq_reads/fastp_out.R2_10032022.fq -S output_novaseq.bam
+#Pacbio:
+hisat2 -f -x genome -q /large/whelk/genome/pacbio_reads/m64047_210924_101806.ccs.fastq,/large/whelk/genome/pacbio_reads/m64047_210924_101806.ccs.fastq,/large/whelk/genome/pacbio_reads/m64047_220322_210536.ccs.fastq -S /large/whelk/genome/hisat2/final_genome/pacbio.bam --no-spliced-alignment
+#Nanopore:
+hisat2 -f -x genome -q /large/whelk/genome/nanopore_reads/basecalling_ligationseq/pass/fastp_combined.fastq,/large/whelk/genome/nanopore_reads/basecalling_ligationseq2/pass/fastp_combined2.fastq -S /large/whelk/genome/hisat2/final_genome/nanopore.bam --no-spliced-alignment
+
+#sorting each bam file
+samtools sort /large/whelk/genome/hisat2/final_genome/output_novaseq.bam -o /large/whelk/genome/hisat2/final_genome/novaseq_sorted.bam
+samtools sort /large/whelk/genome/hisat2/final_genome/nanopore.bam -o /large/whelk/genome/hisat2/final_genome/nanopore_sorted.bam
+samtools sort /large/whelk/genome/hisat2/final_genome/pacbio.bam -o /large/whelk/genome/hisat2/final_genome/pacbio_sorted.bam
+
 conda create -n qualimap
 conda install -c bioconda qualimap
 
-# running qualimap
+# running qualimap (outputs in hisat2/final_genome stats)
 qualimap bamqc -bam /large/whelk/genome/hisat2/final_genome/novaseq_sorted.bam -outfile /large/whelk/genome/qualimap -nt 40 --java-mem-size=700G
 qualimap bamqc -bam /large/whelk/genome/hisat2/final_genome/nanopore_sorted.bam -outfile /large/whelk/genome/qualimap
 qualimap bamqc -bam /large/whelk/genome/hisat2/final_genome/pacbio_sorted.bam -outfile /large/whelk/genome/qualimap
 
+____________________________________________________________________________________________________________________________________________________________
+
+# alignment of unigenes to genome
 
 
 
