@@ -286,13 +286,42 @@ qualimap bamqc -bam /large/whelk/genome/hisat2/final_genome/pacbio_sorted.bam -o
 
 ____________________________________________________________________________________________________________________________________________________________
 
-# alignment of unigenes to genome
+# contig QC 
+
+conda create -n emboss
+conda install -c bioconda emboss
+
+# run infoseq on genome assembly
+infoseq /large/whelk/genome/final_scaf.fa -outfile ./contig_gc_content
 
 
+____________________________________________________________________________________________________________________________________________________________
 
+# Validation of genome assembly - Mapping RNA-seq data to genome 
 
+#checking original rna-seq alignment
+qualimap bamqc -bam /large/whelk/genome/hisat2/sorted_bam/all.bam -outfile /large/whelk/genome/qualimap -nt 40 --java-mem-size=700G
+# results in root/large/whelk/genome/hisat2/sorted_bam/all_stats/genome_results.txt
 
+# RNA-seq read alignment (do in root/large/whelk/genome/hisat2/final_genome)
+for sample in `cat /large/whelk/transcriptome/filtered_spadestranscriptome/sample_list.txt`
+do
+  hisat2 -x genome -1 /large/whelk/transcriptome/kw_fastq_all_trimmed/${sample}_1_paired.fq.gz -2 /large/whelk/transcriptome/kw_fastq_all_trimmed/${sample}_2_paired.fq.gz -S /large/whelk/genome/hisat2/rna/rna_align_finalgenome/${sample}_out.bam
+done
 
+# sorting BAM files (do in root/large/whelk/genome/hisat2/rna/rna_align_finalgenome)
+for sample in `cat /large/whelk/transcriptome/filtered_spadestranscriptome/sample_list.txt`
+do
+  samtools sort ${sample}_out.bam -o /large/whelk/genome/hisat2/rna/rna_align_finalgenome/sorted/${sample}_sorted.bam
+done
+
+# merging bam files (do in root/large/whelk/genome/hisat2/rna/rna_align_finalgenome/sorted)
+samtools merge all.bam /large/whelk/genome/hisat2/rna/rna_align_finalgenome/sorted/*.bam
+
+# alignment stats (do in root/large/whelk/genome/hisat2/rna/rna_align_finalgenome/sorted)
+qualimap bamqc -bam /large/whelk/genome/hisat2/rna/rna_align_finalgenome/sorted/all.bam -outfile /large/whelk/genome/qualimap
+
+# if this isnt above 90% we can also just do NAP larvae and see the alignment there
 
 
 
