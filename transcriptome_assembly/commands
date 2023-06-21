@@ -58,6 +58,263 @@ ________________________________________________________________________________
 
 
 
+^^^old stuff
+
+________________________________________________________________________________________________________________________________________
+
+# Trinity transcriptome assembly
+#creating left and right datasets from paired end combined sequence files from trimmomatic output
+
+LEFT=$SRC_DATA_DIR/combined_1_paired.fq.gz
+RIGHT=$SRC_DATA_DIR/combined_2_paired.fq.gz
+
+#command for trinity assembly (note: FORCE was used to complete assembly)
+docker run --rm -v `pwd`/..:`pwd`/.. trinityrnaseq/trinityrnaseq Trinity --seqType fq --left $LEFT --right $RIGHT --CPU 32 --max_memory 700G --output `pwd`/trinity_assembly_1 --FORCE > trinity_assembly.log 2>&1
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# BUSCO analysis of Transcriptome assemblies 
+
+# RNAspades transcriptome
+#metazoa dataset (C:99%)
+docker run -u $(id -u) -v $(pwd):/busco_wd ezlabgva/busco:v5.3.2_cv1 busco -i ./transcripts.fasta -o ./whelk_spades_busco_output_05032022 -m transcriptome  -l metazoa_odb10 --cpu 60
+
+#mollusca dataset (C:90.5%)
+docker run -u $(id -u) -v $(pwd):/busco_wd ezlabgva/busco:v5.3.2_cv1 busco -i ./transcripts.fasta -o ./whelk_spades_busco_output_05032022_mullusca -m transcriptome  -l mollusca  --cpu 250
+
+
+# Trinity transcriptome 
+#metazoa dataset (C:98.4%)
+docker run -u $(id -u) -v $(pwd):/busco_wd ezlabgva/busco:v5.3.2_cv1 busco -i ./trinity_assembly_1.Trinity.fasta -o ./whelk_trinity_busco_output_05042022_metazoa -m transcriptome  -l metazoa_odb10 --cpu 250
+
+#mollusca dataset (C:88.2%)
+docker run -u $(id -u) -v $(pwd):/busco_wd ezlabgva/busco:v5.3.2_cv1 busco -i ./trinity_assembly_1.Trinity.fasta -o ./whelk_trinity_busco_output_05042022_mollusca -m transcriptome  -l mollusca --cpu 250
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# filtering of RNAspades transcriptome???
+
+
+
+# andy ???
+
+
+
+_____________________________________________________________________________________________________________________________________________________________________________________________
+### filtering of transcriptome of microbial gene expression
+### splitting gene ids between microorganism and eukaryota transcriptomes
+
+Conda create -n blast
+Conda activate blast
+conda install -c bioconda blast
+
+# archaea database
+makeblastdb -in archaea_uniprot-reviewed_yes+taxonomy_2157.fasta -title pdbaa_archaea -dbtype prot -out pdbaa_archaea -parse_seqids
+# bacteria
+makeblastdb -in bacteria_uniprot-reviewed_yes+taxonomy_2.fasta -title pdbaa_bacteria -dbtype prot -out pdbaa_bacteria -parse_seqids
+# fungi
+makeblastdb -in fungi_uniprot-reviewed_yes+taxonomy_4751.fasta -title pdbaa_fungi -dbtype prot -out pdbaa_fungi -parse_seqids
+# viruses
+makeblastdb -in viruses_uniprot-reviewed_yes+taxonomy_10239.fasta -title pdbaa_viruses -dbtype prot -out pdbaa_viruses -parse_seqids
+# eukaryota
+makeblastdb -in eukaryota_uniprot_reviewed.fasta -title pdbaa_eukaryota -dbtype prot -out pdbaa_eukaryota -parse_seqids
+
+# virus blast
+blastx -query ./rnaspades_assembly_calpoly_annotated_swissprot_nr.fasta -db ./blastdb_reviewed/pdbaa_viruses -out ./viruses_proteins_blastx_1e-5_table.txt -evalue 1e-5 -outfmt 6
+
+# bacteria blast
+blastx -query ./rnaspades_assembly_calpoly_annotated_swissprot_nr.fasta -db ./blastdb_reviewed/pdbaa_bacteria -out ./bacteria_proteins_blastx_1e-5_table.txt -evalue 1e-5 -outfmt 6
+
+# archaea blast
+blastx -query ./rnaspades_assembly_calpoly_annotated_swissprot_nr.fasta -db ./blastdb_reviewed/pdbaa_archaea -out ./archaea_proteins_blastx_1e-5_table.txt -evalue 1e-5 -outfmt 6
+
+# eukaryota blast
+blastx -query ./rnaspades_assembly_calpoly_annotated_swissprot_nr.fasta -db ./blastdb_reviewed/pdbaa_eukaryota -out ./eukaryota_proteins_blastx_1e-5_table.txt -evalue 1e-5 -outfmt 6 -num_threads 64
+
+
+# in R, add column signifying origin - either microbiome or eukaryota
+
+setwd("~/Desktop/transcirptome_filter")
+v <- read.delim("viruses_proteins_blastx_1e-5_table.txt", header=FALSE)
+b <- read.delim("bacteria_proteins_blastx_1e-5_table.txt", header=FALSE)
+a <- read.delim("archaea_proteins_blastx_1e-5_table.txt", header=FALSE)
+e <- read.delim("eukaryota_proteins_blastx_1e-5_table.txt", header=FALSE)
+
+# adding column signifying origin 
+v$origin = viruses
+b$origin = bacteria
+a$origin = archaea
+e$origin = eukaryota
+
+# adding column signifying group 
+v$group = microorganism
+b$group = microorganism
+a$group = microorganism
+e$group = host
+
+# combining all blasts into one dataframe 
+combo = rbind(v,b,a,e)
+
+# put in order of % id and then bitscore
+sorted_combo = combo[order(-combo$V3),]
+head(sorted_combo)
+sorted_combo = combo[order(-combo$V12),]
+head(sorted_combo)
+
+# removed dupicate ids
+nodub_combo = sorted_combo[!duplicated(sorted_combo$V1), ]
+
+# seperate into groups: microorganism and eukaryota
+micro = subset(nodub_combo, group == 'microorganism')
+host = subset(nodub_combo, group == 'host')
+
+# files for blast results on each group
+write.csv(micro, "~/Desktop/microbiome_blast.csv")
+write.csv(host, "~/Desktop/eukaryota_blast.csv")
+
+# get gene ids from each group
+micro_geneids = micro$V1
+host_geneids = host$V1
+
+write(micro_geneids, "micro_geneids.txt")
+write(host_geneids, "host_geneids.txt")
+
+# create host_transcriptome based on removal of micro_geneids
+# get all geneids from the transcriptome on server
+grep "^>" ./rnaspades_assembly_calpoly_annotated_swissprot_nr.fasta | cut -d'|' -f3 | cut -d ' ' -f1 > ./geneids.txt
+
+# put into R
+
+# subtract micro_geneids from transcriptome gene ids
+geneids = read.table("geneids.txt", header=FALSE)
+
+# remove ">"
+geneids$V1<-gsub(">","",as.character(geneids$V1))
+
+# ids to remove
+df2 = data.frame(micro_geneids)
+
+# convert to transcriptome gene ids to dataframe
+df = data.frame(geneids)
+
+# removing micro gene ids from transcriptome gene ids
+# df$V1 = transcriptome geneids, df2$V1 = gene ids to remove
+df$V1 %in% df2$V1
+
+# 1448 contaminated gene ids removed
+sorted_df = df$V1 [! df$V1 %in% df2$V1]
+
+# write as a text file
+write(sorted_df, "whelk_geneids.txt")
+
+# ON SERVER:
+
+# file with gene ids of interest
+conda activate seqtk
+
+# creating microbiome transcriptome
+# do in filtered transcriptome directory
+seqtk subseq rnaspades_assembly_calpoly_annotated_swissprot_nr.fasta whelk_geneids.txt > whelk_transcriptome.fasta
+
+# kallisto gene ocunts
+conda activate kallisto 
+#do in filtered transcriptome directory
+kallisto index -i transcripts_whelk.idx whelk_transcriptome.fasta 
+
+# gene counts (make folder ***_kallisto_quant before running)
+for sample in `cat ./sample_list.txt`
+do
+  kallisto quant -i /large/whelk/transcriptome/filtered_spadestranscriptome/transcripts_whelk.idx -o /large/whelk/transcriptome/filtered_spadestranscriptome/whelk_transcriptome_kallisto_quant/${sample}_out/ -t 60 /large/whelk/transcriptome/kw_fastq_all_trimmed/${sample}_1_paired.fq.gz /large/whelk/transcriptome/kw_fastq_all_trimmed/${sample}_2_paired.fq.gz
+done
+
+# check whelk_transcriptome busco
+#mollusca
+busco -i ./whelk_transcriptome.fasta -o ./whelk_transcriptome_busco_04114023_mollusca -m transcriptome  -l mollusca --cpu 250
+#metazoa
+busco -i ./whelk_transcriptome.fasta -o ./whelk_transcriptome_busco_04112023_metazoa -m transcriptome  -l metazoa_odb10 --cpu 250
+
+_____________________________________________________________________________________________________________________________________________________________________________________________
+
+### combo of kallisto gene count folders
+(in R studio on server)
+### combining tsv files in R
+BiocManager::install("tximportData")
+
+BiocManager::install("rhdf5")
+
+BiocManager::install("tximport")
+
+BiocManager::install("readr")
+
+BiocManager::install("dplyr")
+
+BiocManager::install("ggplot2")
+
+library(tximportData)
+library(readr)
+library(stringr)
+library(tximport)
+library(rhdf5)
+library(dplyr)
+library(ggplot2)
+library(rlang)
+library(lifecycle)
+
+# transcriptome
+setwd("/large/whelk/transcriptome/filtered_spadestranscriptome/")
+dir = system.file("extdata", package = "tximportData")
+dir
+list.files(dir)
+
+samples = read.table("/large/whelk/microbiome/sample_list.txt")
+names(samples) = "names"
+samples$names = paste(samples$names, "_out", sep = "")
+
+files = file.path("/large/whelk/transcriptome/filtered_spadestranscriptome/whelk_transcriptome_kallisto_quant", samples$names, "abundance.tsv")
+#files_h = file.path("/large/whelk/microbiome/transcriptome_kallisto_quant", samples$names, "abundance.tsv")
+
+con = file("whelk_transcriptome.fasta")
+data = readLines(con = con)
+close(con)
+
+fa = data[grepl(">",data)]
+
+fa = str_replace(fa, ">", "")
+fa
+
+tx2gene = data.frame('TXNAME' = fa, 'GENEID' = fa)
+tx2gene
+
+# remove isoforms?
+#tx2gene$GENEID = gsub("\\_i.*", "", tx2gene$GENEID)
+#tx2gene
+
+files
+names(files) = samples$names
+
+txi.kallisto.whelk.tsv = tximport(files, type = 'kallisto', tx2gene = tx2gene, ignoreAfterBar = TRUE)
+head(txi.kallisto.whelk.tsv)
+names(txi.kallisto.whelk.tsv)
+dim(txi.kallisto.whelk.tsv)
+
+abundance = as.data.frame(txi.kallisto.whelk.tsv$abundance)
+df = data.frame("geneIDs" = rownames(abundance))
+
+df2 = cbind(df, data.frame(abundance, row.names=NULL))
+df2
+
+write.table(df2, file = "txi.kallisto.whelk.abundance.tsv", sep = "\t", row.names = FALSE)  
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
