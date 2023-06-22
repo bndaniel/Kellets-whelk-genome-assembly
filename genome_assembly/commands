@@ -173,8 +173,7 @@ samtools merge all.bam /large/whelk/genome/hisat2/sorted_bam/*.bam
 samtools index all.bam  all.bam.bai
 
 # RNA_BESST scaffolding
-python Main.py 1 -c /large/whelk/genome/whelk_genome_flye_nanopac_fastp_04252023/assembly.fasta -f /large/whelk/genome/hisat2/sorted_bam/all.bam -o /large/whelk/genome/besst_rna 
-
+python Main.py 1 -c /large/whelk/genome/whelk_genome_flye_nanopac_fastp_04252023/assembly.fasta -f /large/whelk/genome/hisat2/sorted_bam/all.bam -o /large/whelk/genome/besst_rna/default_param -e 3 -T 20000 -k 500 -d 1 -z 1000
 # busco 
 busco -i /large/whelk/genome/besst_rna/default_param/pass1/Scaffolds-pass1.fa -o ./rna_scaffold_051123_metazoabusco -m genome -l metazoa_odb10 --cpu 100 --update-data -f
 
@@ -186,22 +185,6 @@ samtools sort output_novaseq.bam -o novaseq_sorted.bam
 
 # idexing bam file
 samtools index novaseq_sorted.bam  novaseq_sorted.bam.bai
-- - - - - - - - 
-
-### does just using NAP rna-seq data improve genome?
-# merge bam files for tank #1 (only NAP)
-samtools merge nap.bam /large/whelk/genome/hisat2/sorted_bam/T1E*.bam
-
-#indexing combined NAP bam file
-samtools index nap.bam  nap.bam.bai
-
-# RNA_BESST scaffolding using default params
-python /large/whelk/genome/besst_rna/BESST_RNA-master/src/Main.py 1 -c /large/whelk/genome/whelk_genome_flye_nanopac_fastp_04252023/assembly.fasta -f /large/whelk/genome/hisat2/sorted_bam/nap.bam -o /large/whelk/genome/besst_rna/nap_besst -e 3 -T 20000 -k 500 -d 1 -z 1000
-
-# busco
-busco -i /large/whelk/genome/besst_rna/nap_besst... -o ./nap_genome_scaf_200623_metazoabusco -m genome -l metazoa_odb10 --cpu 100 --update-data -f
-
-- - - - - - - - 
 
 # BESST scaffolding with novaseq reads
 conda create --name besst4 python=2.7
