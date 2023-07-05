@@ -318,12 +318,61 @@ done
 samtools merge all.bam /large/whelk/genome/hisat2/rna/rna_align_finalgenome/sorted/*.bam
 
 # alignment stats (do in root/large/whelk/genome/hisat2/rna/rna_align_finalgenome/sorted)
-qualimap bamqc -bam /large/whelk/genome/hisat2/rna/rna_align_finalgenome/sorted/all.bam -outfile /large/whelk/genome/qualimap
+qualimap bamqc -bam /large/whelk/genome/hisat2/rna/rna_align_finalgenome/sorted/all.bam -outfile /large/whelk/genome/qualimap -nt 40 --java-mem-size=700G
 
-# if this isnt above 90% we can also just do NAP larvae and see the alignment there
+____________________________________________________________________________________________________________________________________________________________
+
+# Stringtie gtf file for transdecoder
+stringtie -o /large/whelk/genome/hisat2/rna/rna_align_finalgenome/stringtie.gtf -p 60 -m 150 /large/whelk/genome/hisat2/rna/rna_align_finalgenome/sorted/all.bam
+
+# Transdecoder 
+conda install -c bioconda transdecoder
+curl -L https://cpanmin.us | perl - App::cpanminus
+cpanm install DB_File
+cpanm install URI::Escape
+
+# create transcript fasta using stringtie gtf
+/large/whelk/genome/transdecoder/TransDecoder-TransDecoder-v5.7.0/util/gtf_genome_to_cdna_fasta.pl /large/whelk/genome/hisat2/rna/rna_align_finalgenome/stringtie.gtf /large/whelk/genome/final_scaf.fa > /large/whelk/genome/transdecoder/transcripts.fasta
+
+# Convert gtf file (made by stringtie) to GFF3 file
+/large/whelk/genome/transdecoder/TransDecoder-TransDecoder-v5.7.0/util/gtf_to_alignment_gff3.pl /large/whelk/genome/transdecoder/stringtie.gtf > /large/whelk/genome/transdecoder/transcripts.gff3
+
+# Create predictions for transcript fasta file
+TransDecoder.LongOrfs -t /large/whelk/genome/transdecoder/transcripts.fasta
+
+# Create blast file for homology based options
+makeblastdb -in /large/whelk/genome/transdecoder/eukaryota_uniprot_reviewed.fasta -title pdbaa_eukaryota -dbtype prot -out pdbaa_eukaryota -parse_seqids
+
+blastp -query /large/whelk/genome/transdecoder/transcripts.fasta.transdecoder_dir/longest_orfs.pep -db /large/whelk/genome/transdecoder/pdbaa_eukaryota -max_target_seqs 1 -outfmt 6 -evalue 1e-5 -num_threads 60 > /large/whelk/genome/transdecoder/blastp_genome.outfmt6
+
+# Predictions with homology based info
+TransDecoder.Predict -t /large/whelk/genome/transdecoder/transcripts.fasta --retain_blastp_hits /large/whelk/genome/transdecoder/blastp_genome.outfmt6
+
+# Create a Genome-based coding region annotation file
+/large/whelk/genome/transdecoder/TransDecoder-TransDecoder-v5.7.0/util/cdna_alignment_orf_to_genome_orf.pl \
+     /large/whelk/genome/transdecoder/transcripts.fasta.transdecoder.gff3 \
+     /large/whelk/genome/transdecoder/transcripts.gff3 \
+     /large/whelk/genome/transdecoder/transcripts.fasta > /large/whelk/genome/transdecoder/transcripts.fasta.transdecoder.genome.gff3
+
+____________________________________________________________________________________________________________________________________________________________
+
+Orthofinder phylogenetics
+# download 4 closely related species protein fasta for orthofinder
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/002/075/GCF_000002075.1_AplCal3.0/GCF_000002075.1_AplCal3.0_protein.faa.gz
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/003/073/045/GCF_003073045.1_ASM307304v1/GCF_003073045.1_ASM307304v1_protein.faa.gz
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/018/292/915/GCA_018292915.1_EWHU_Batt_1.0/GCA_018292915.1_EWHU_Batt_1.0_protein.faa.gz
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/019/648/995/GCA_019648995.1_PoB_v1/GCA_019648995.1_PoB_v1_protein.faa.gz
+
+conda install -c bioconda orthofinder
+
+# run orthofinder with above protein fastas + kellets whelk protein fasta /large/whelk/genome/transdecoder/transcripts.fasta.transdecoder_dir/longest_orfs.pep
+orthofinder -t 60 -a 10 -f /large/whelk/genome/transdecoder/orthofinder
 
 
 
+
+
+____________________________________________________________________________________________________________________________________________________________
 
 all below should be where cassidy put it
 # comparison to other assemblies
@@ -334,6 +383,7 @@ run BUSCO on all of them... and quast... should be enough statistics
 
 
 
+# 
 
 
 
