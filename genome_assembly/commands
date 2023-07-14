@@ -141,6 +141,18 @@ busco -i /large/whelk/genome/whelk_genome_flye_nanopac_fastp_04252023/assembly.f
 
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
+# MaSuRCA assembly
+conda create -n masurca4.1
+conda install -c bioconda masurca
+
+#command for masurca
+masurca -t 64 -i /large/whelk/genome/novaseq_reads/fastp_out.R1_10032022.fq, /large/whelk/genome/novaseq_reads/fastp_out.R2_10032022.fq -r /large/whelk/genome/fastp_combinedlrseq.fa.gz
+
+# busco
+busco -i /large/whelk/genome/masurca_06052023/CA.mr.99.17.15.0.02/primary.genome.scf.fasta -o ./masurca_062123_metazoabusco -m genome -l metazoa_odb10 --cpu 100 -f
+
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
 # RNA_BESST scaffolding with RNA-seq data
 
 # hisat2 read alignment
@@ -174,6 +186,7 @@ samtools index all.bam  all.bam.bai
 
 # RNA_BESST scaffolding
 python Main.py 1 -c /large/whelk/genome/whelk_genome_flye_nanopac_fastp_04252023/assembly.fasta -f /large/whelk/genome/hisat2/sorted_bam/all.bam -o /large/whelk/genome/besst_rna/default_param -e 3 -T 20000 -k 500 -d 1 -z 1000
+
 # busco 
 busco -i /large/whelk/genome/besst_rna/default_param/pass1/Scaffolds-pass1.fa -o ./rna_scaffold_051123_metazoabusco -m genome -l metazoa_odb10 --cpu 100 --update-data -f
 
@@ -212,6 +225,9 @@ quast -o /large/whelk/genome/quast_final/spades -t 40 --large /large/whelk/genom
 # flye
 quast -o /large/whelk/genome/quast_final/flye -t 40 --large /large/whelk/genome/whelk_genome_flye_nanopac_fastp_04252023/assembly.fasta
 
+# Masurca
+quast -o /large/whelk/genome/quast_final/masurca -t 40 --large /large/whelk/genome/masurca_06052023/CA.mr.99.17.15.0.02/primary.genome.scf.fasta
+
 # rna-seq scaf
 quast -o /large/whelk/genome/quast_final/rna -t 40 --large /large/whelk/genome/besst_rna/default_param/pass1/Scaffolds-pass1.fa
 
@@ -226,17 +242,9 @@ ________________________________________________________________________________
 
 
 
-
-
-
-
-
-
-
-
 ____________________________________________________________________________________________________________________________________________________________
 
-# read alignment for circos plot
+# read alignment mapping
 
 # create genome index files for mapping (in root/large/whelk/genome/hisat2/final_genome)
 hisat2-build /large/whelk/genome/final_scaf.fa genome
@@ -254,12 +262,11 @@ hisat2 -f -x genome -U /large/whelk/genome/pacbio_reads/m64047_220522_063338.ccs
 hisat2 -f -x genome -U /large/whelk/genome/nanopore_reads/basecalling_ligationseq/pass/fastp_combined.fastq -S /large/whelk/genome/hisat2/final_genome/pacbio_3.bam --no-spliced-alignment
 hisat2 -f -x genome -U /large/whelk/genome/nanopore_reads/basecalling_ligationseq2/pass/fastp_combined2.fastq -S /large/whelk/genome/hisat2/final_genome/pacbio_3.bam --no-spliced-alignment
 
-# combining all bam files for circos plot
+# combining all bam files
 samtools merge all_reads.bam /large/whelk/genome/hisat2/final_genome/*.bam
 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-
-____________________________________________________________________________________________________________________________________________________________
 ### Read mapping with qualimap (stats for each read type)
 
 # alignment of all reads from each read type
@@ -357,20 +364,54 @@ TransDecoder.Predict -t /large/whelk/genome/transdecoder/transcripts.fasta --ret
 ____________________________________________________________________________________________________________________________________________________________
 
 Orthofinder phylogenetics
-# download 4 closely related species protein fasta for orthofinder
-wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/002/075/GCF_000002075.1_AplCal3.0/GCF_000002075.1_AplCal3.0_protein.faa.gz
-wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/003/073/045/GCF_003073045.1_ASM307304v1/GCF_003073045.1_ASM307304v1_protein.faa.gz
-wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/018/292/915/GCA_018292915.1_EWHU_Batt_1.0/GCA_018292915.1_EWHU_Batt_1.0_protein.faa.gz
-wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/019/648/995/GCA_019648995.1_PoB_v1/GCA_019648995.1_PoB_v1_protein.faa.gz
+# download 10 closely related, high quality genome anootation, species protein fasta for orthofinder
+# wget on each species listed protein fasta file
+
+# Babylonia areolata
+# https://www.ncbi.nlm.nih.gov/genome/?term=txid304850[orgn]
+
+# Conus ventricosus
+# https://www.ncbi.nlm.nih.gov/genome/?term=txid117992[orgn]
+
+# Pomacea canaliculata
+# https://www.ncbi.nlm.nih.gov/genome/?term=txid400727[orgn]
+
+# Aplysia californica 
+# https://www.ncbi.nlm.nih.gov/genome/?term=txid6500[orgn]
+
+# Elysia marginata
+# https://www.ncbi.nlm.nih.gov/genome/?term=txid1093978[orgn]
+
+# Gigantopelta aegis
+# https://www.ncbi.nlm.nih.gov/genome/97475
+
+# Haliotis rubra
+# https://www.ncbi.nlm.nih.gov/genome/7380
+
+# Pecten maximus
+# https://www.ncbi.nlm.nih.gov/genome/85955
+
+# Mya arenaria
+# https://www.ncbi.nlm.nih.gov/genome/17494
+
+# Owenia fusiformis
+# https://www.ncbi.nlm.nih.gov/genome/42181
 
 conda install -c bioconda orthofinder
 
-# run orthofinder with above protein fastas + kellets whelk protein fasta /large/whelk/genome/transdecoder/transcripts.fasta.transdecoder_dir/longest_orfs.pep
+# run orthofinder with above protein fastas + kellets whelk protein fasta /large/whelk/genome/transdecoder/transcripts.fasta.transdecoder.pep
 orthofinder -t 60 -a 10 -f /large/whelk/genome/transdecoder/orthofinder
 
+____________________________________________________________________________________________________________________________________________________________
 
+# Protein annotation file cleanup
+# Combine similar protein sequences from transdecoder using cd hit with 95% id
 
+conda activate cdhit
+cd-hit -i /large/whelk/genome/transdecoder/transcripts.fasta.transdecoder.pep -o /large/whelk/genome/transdecoder/genome_protein_95.pep -c 0.95 -n 5 -M 800000 -d 0 -T 60
 
+# reblast to eukaryota uniprot database 
+blastp -query /large/whelk/genome/transdecoder/genome_protein_95.pep -db /large/whelk/genome/transdecoder/pdbaa_eukaryota -max_target_seqs 1 -outfmt 6 -evalue 1e-5 -num_threads 60 > /large/whelk/genome/transdecoder/blastp_genome_final.outfmt6.txt
 
 ____________________________________________________________________________________________________________________________________________________________
 
@@ -384,7 +425,6 @@ run BUSCO on all of them... and quast... should be enough statistics
 
 
 # 
-
 
 
 
