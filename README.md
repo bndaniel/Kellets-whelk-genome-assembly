@@ -25,10 +25,8 @@ Genome and transcriptome assembly along with annotation files can be found here:
 <br>
 <br>
 
-### Genome assembly comparison
-
-Genome assembly commands
-<br>
-https://github.com/bndaniel/Kellets-whelk-genome-assembly/tree/main/genome_assembly
 
 insert figure of busco comparison
+
+insert figure of circos plot with kk
+
