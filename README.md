@@ -1,4 +1,4 @@
-# Kellet's whelk *de novo* Genome Assembly
+# Kellet's whelk *De Novo* Genome Assembly
 
 Ben N. Daniels, Cassidy Andrasz, Nicholas Zarate, Rob Toonen, Crow White, Paul Anderson, Jean M. Davidson
 
@@ -6,10 +6,12 @@ California Polytechnic State University
 <br>
 University of Hawaii at Manoa
 
-## Abstract
-De novo genome assembly!.... Yada yada heterozygosity!.... Yada yada next gen sequencing! Yada yada long read sequencing hybrid yay! ….. Phylogenetics…. Wooo. hox geeeeeenneneeess yipeekiyay
+## INFO
+All commands used for Kellet's whelk *Kelletia kelletii* *De Novo* genome and transcriptome assembly. All commands were run on a Titan server operated by the BIRG at California Polytechnic State University under the direct supervision of Drs. Paul Anderson and Jean M. Davidson.
 
-**Background:** Genome assemblies are like *totally* awesome.
+**DATA:** 
+All raw data has been uploaded to NCBI SRA here: 
+Genome and transcriptome assembly along with annotation files can be found here: 
 
 **Results:** Our genome is like super legitness.
 
