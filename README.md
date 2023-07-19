@@ -1,13 +1,13 @@
 # Kellet's whelk *De Novo* Genome and Transcriptome Assembly
 <br>
-Benjamin N. Daniels<sup>1</sup>, Cassidy Andrasz1, Nicholas Zarate1, Andy Lee2, Cataixa López3, Mark Christie2, Robert J Toonen3, Crow White1, Paul Anderson1, Jean Davidson1
+Benjamin N. Daniels<sup>1</sup>, Cassidy Andrasz<sup>1</sup>, Nicholas Zarate<sup>1</sup>, Andy Lee<sup>2</sup>, Cataixa López<sup>3</sup>, Mark Christie<sup>2</sup>, Robert J Toonen<sup>3</sup>, Crow White<sup>1</sup>, Paul Anderson<sup>1</sup>, Jean Davidson<sup>1</sup>
 <br>
 <br>
-1 Center for Coastal Marine Sciences, California Polytechnic State University, San Luis Obispo, CA 93407
+<sup>1</sup> Center for Coastal Marine Sciences, California Polytechnic State University, San Luis Obispo, CA 93407
 <br>
-2 Department of Biological Sciences, Purdue University, West Lafayette, 47907-2054, IN, USA
+<sup>2</sup> Department of Biological Sciences, Purdue University, West Lafayette, 47907-2054, IN, USA
 <br>
-3 Hawai‘i Institute of Marine Biology, University of Hawai‘i at Mānoa, Kāne‘ohe, HI 96744, USA
+<sup>3</sup> Hawai‘i Institute of Marine Biology, University of Hawai‘i at Mānoa, Kāne‘ohe, HI 96744, USA
 <br>
 
 <br>
