@@ -1,10 +1,13 @@
 # Kellet's whelk *De Novo* Genome and Transcriptome Assembly
-
-Ben N. Daniels, Cassidy Andrasz, Nicholas Zarate, Rob Toonen, Crow White, Paul Anderson, Jean M. Davidson
-
-California Polytechnic State University
 <br>
-University of Hawaii at Manoa
+Benjamin N. Daniels1, Cassidy Andrasz1, Nicholas Zarate1, Andy Lee2, Cataixa López3, Mark Christie2, Robert J Toonen3, Crow White1, Paul Anderson1, Jean Davidson1
+<br>
+
+1 Center for Coastal Marine Sciences, California Polytechnic State University, San Luis Obispo, CA 93407
+2 Department of Biological Sciences, Purdue University, West Lafayette, 47907-2054, IN, USA
+3 Hawai‘i Institute of Marine Biology, University of Hawai‘i at Mānoa, Kāne‘ohe, HI 96744, USA
+
+<br>
 
 ## INFO
 All commands used for Kellet's whelk *Kelletia kelletii* *De Novo* genome and transcriptome assembly. All commands were run on a Titan server operated by the BIRG at California Polytechnic State University under the direct supervision of Drs. Paul Anderson and Jean M. Davidson.
