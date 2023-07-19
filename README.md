@@ -13,7 +13,7 @@ Benjamin N. Daniels<sup>1</sup>, Cassidy Andrasz<sup>1</sup>, Nicholas Zarate<su
 <br>
 
 ## INFO
-All commands used for Kellet's whelk *Kelletia kelletii* *De Novo* genome and transcriptome assembly. All commands were run on a Titan server operated by the Bioinformatics Research Group (BIRG) at California Polytechnic State University under the direct supervision of Drs. Paul Anderson and Jean M. Davidson.
+All commands and scripts used for Kellet's whelk *Kelletia kelletii* *De Novo* genome and transcriptome assembly. All commands were run on a Titan server operated by the Bioinformatics Research Group (BIRG) at California Polytechnic State University under the direct supervision of Drs. Paul Anderson and Jean M. Davidson.
 
 **DATA:** 
 <br>
