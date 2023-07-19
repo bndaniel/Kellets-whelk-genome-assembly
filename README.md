@@ -31,8 +31,15 @@ Genome and transcriptome assembly along with annotation files can be found here:
 <br>
 <br>
 
+<img width="1474" alt="Screenshot 2023-07-19 at 1 34 53 PM" src="https://github.com/bndaniel/Kellets-whelk-genome-assembly/assets/71898958/572d5c4b-c7b1-43b5-ab58-6f2188bf9a3f">
 
-insert figure of busco comparison
+<img width="1473" alt="Screenshot 2023-07-19 at 1 30 36 PM" src="https://github.com/bndaniel/Kellets-whelk-genome-assembly/assets/71898958/eb89783f-be9e-42d8-965f-4e5ef67b32d4">
 
-insert figure of circos plot with kk
+
+<img width="804" alt="Screenshot 2023-06-22 at 1 12 37 PM" src="https://github.com/bndaniel/Kellets-whelk-genome-assembly/assets/71898958/55cea1ef-99bd-49fe-a55c-94862dcfc9ca">
+
+
+<img width="1491" alt="Screenshot 2023-07-19 at 6 03 59 PM" src="https://github.com/bndaniel/Kellets-whelk-genome-assembly/assets/71898958/78cb2c10-e646-4568-80f3-e966bb08df0f">
+
+
 
