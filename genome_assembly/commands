@@ -349,19 +349,3 @@ cd-hit -i /large/whelk/genome/transdecoder/transcripts.fasta.transdecoder.pep -o
 blastp -query /large/whelk/genome/transdecoder/genome_protein_95.pep -db /large/whelk/genome/transdecoder/pdbaa_eukaryota -max_target_seqs 1 -outfmt 6 -evalue 1e-5 -num_threads 60 > /large/whelk/genome/transdecoder/blastp_genome_final.outfmt6.txt
 
 ____________________________________________________________________________________________________________________________________________________________
-
-all below should be where cassidy put it
-# comparison to other assemblies
-
-# download all the assemblies?
-
-run BUSCO on all of them... and quast... should be enough statistics
-
-
-
-# 
-
-
-
-
-
