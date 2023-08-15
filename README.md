@@ -19,6 +19,8 @@ All commands and scripts used for Kellet's whelk (*Kelletia kelletii*) *de novo*
 <br>
 <br>
 All raw data has been uploaded to NCBI SRA here: 
+Whole genome DNA-seq: https://www.ncbi.nlm.nih.gov/sra/PRJNA999368
+Whole transcriptome RNA-seq: https://www.ncbi.nlm.nih.gov/sra/PRJNA1000198
 <br>
 <br>
 Genome and transcriptome assembly along with annotation files can be found here: 
