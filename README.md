@@ -26,7 +26,7 @@ Whole transcriptome RNA-seq: https://www.ncbi.nlm.nih.gov/sra/PRJNA1000198
 <br>
 <br>
 Genome and transcriptome assembly along with annotation files can be found here: 
-<br> [*in progress*](https://datadryad.org/stash/dataset/doi:10.5061/dryad.w0vt4b8zn)
+<br> https://datadryad.org/stash/dataset/doi:10.5061/dryad.w0vt4b8zn
 
 
 <img width="1474" alt="Screenshot 2023-07-19 at 1 34 53 PM" src="https://github.com/bndaniel/Kellets-whelk-genome-assembly/assets/71898958/572d5c4b-c7b1-43b5-ab58-6f2188bf9a3f">
