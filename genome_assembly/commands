@@ -171,11 +171,20 @@ quast -o /large/whelk/genome/quast_final/rna_dna -t 40 --large /large/whelk/geno
 
 ____________________________________________________________________________________________________________________________________________________________
 
-# BUSCO plot comparing genome assemblies
+# KMC and GenomeScope to estimate genome size and heterozygosity
+# kmc v3.2.1
+mkdir tmp
 
+# put file names into file
+ls /large/whelk/genome/pacbio_reads/m64047_210924_101806.ccs.fastq /large/whelk/genome/pacbio_reads/m64047_210924_101806.ccs.fastq /large/whelk/genome/pacbio_reads/m64047_220322_210536.ccs.fastq /large/whelk/genome/nanopore_reads/basecalling_ligationseq/pass/fastp_combined.fastq /large/whelk/genome/nanopore_reads/basecalling_ligationseq2/pass/fastp_combined2.fastq /large/whelk/genome/novaseq_reads/fastp_out.R1_10032022.fq /large/whelk/genome/novaseq_reads/fastp_out.R2_10032022.fq > FILES
 
+# run KMC 
+kmc -k21 -t60 -m900 -ci1 -cs10000 @FILES reads tmp/
 
+# transform output into historgam for GenomeScope2
+kmc_tools transform reads histogram reads.histo -cx10000
 
+# upload output file to GenomeScope2 website
 
 ____________________________________________________________________________________________________________________________________________________________
 
