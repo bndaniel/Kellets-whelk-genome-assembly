@@ -358,3 +358,64 @@ cd-hit -i /large/whelk/genome/transdecoder/transcripts.fasta.transdecoder.pep -o
 blastp -query /large/whelk/genome/transdecoder/genome_protein_95.pep -db /large/whelk/genome/transdecoder/pdbaa_eukaryota -max_target_seqs 1 -outfmt 6 -evalue 1e-5 -num_threads 60 > /large/whelk/genome/transdecoder/blastp_genome_final.outfmt6.txt
 
 ____________________________________________________________________________________________________________________________________________________________
+
+# post-publication genome improvement using Hi-C reads
+
+#data comparison and anlysis of Hi-C data to previous genome
+#Check quality of Hi-C reads
+fastqc /large/whelk/genome/hic/reads/DTG_OmniC_858_R1.fastq.gz -o /large/whelk/genome/hic/reads/ -t 30
+
+fastqc /large/whelk/genome/hic/reads/DTG_OmniC_858_R2.fastq.gz -o /large/whelk/genome/hic/reads/ -t 30
+
+# Decompressing files
+gzip -d /large/whelk/genome/hic/reads/DTG_OmniC_858_R1.fastq.gz
+gzip -d /large/whelk/genome/hic/reads/DTG_OmniC_858_R2.fastq.gz
+
+# Clean up Hi-C reads
+fastp -i /large/whelk/genome/hic/reads/DTG_OmniC_858_R1.fastq -I /large/whelk/genome/hic/reads/DTG_OmniC_858_R2.fastq -o /large/whelk/genome/hic/reads/fastp_DTG_OmniC_858_R1.fastq -O /large/whelk/genome/hic/reads/fastp_DTG_OmniC_858_R2.fastq -w 60
+
+# Alignment of Hi-C data to old genome
+hisat2 -x genome -1 /large/whelk/genome/hic/reads/fastp_DTG_OmniC_858_R1.fastq -2 /large/whelk/genome/hic/reads/fastp_DTG_OmniC_858_R2.fastq -S /large/whelk/genome/hisat2/hic.bam
+
+# Genome reference index for cleaned genome
+hisat2-build /large/whelk/genome/hic/cleaned_genome/cleaned_ncbi_genome.fasta cleaned_genome
+
+# Alignment of Hi-C data to cleaned genome from ncbi
+hisat2 -x cleaned_genome -p 30 -1 /large/whelk/genome/hic/reads/fastp_DTG_OmniC_858_R1.fastq -2 /large/whelk/genome/hic/reads/fastp_DTG_OmniC_858_R2.fastq -S /large/whelk/genome/hic/cleaned_genome/cleaned_genome_hic_align.bam
+____________________________________________________________________________________________________________________________________________________________
+
+# Conduct Salsa scaffolding using old corrected genome
+# https://github.com/marbl/SALSA
+# v2.3
+
+conda install -c bioconda salsa2
+
+# Convert bam to bed file for salsa
+bamToBed -i /large/whelk/genome/hic/cleaned_genome/cleaned_genome_hic_align.bam > hic_alignment.bed
+
+# Sort based on salsa requirements
+sort -k 4 hic_alignment.bed > hic_alignment_salsa.bed
+
+# Index genome file for salsa
+samtools faidx /large/whelk/genome/hic/cleaned_genome/cleaned_ncbi_genome.fasta
+
+# Running salsa with corrections on assembly using hiC data
+run_pipeline.py -a /large/whelk/genome/hic/cleaned_genome/cleaned_ncbi_genome.fasta -l /large/whelk/genome/hic/cleaned_genome/cleaned_ncbi_genome.fasta.fai -b /large/whelk/genome/hic/cleaned_genome/hic_alignment_salsa.bed -e DNASE -o /large/whelk/genome/hic/salsa/082923/ -m yes
+
+# Running decontamination on Salsa output
+
+# FCS-GX (look for prokaryotic sequences)
+python3 ./fcs.py screen genome --fasta /large/whelk/genome/hic/salsa/082923/scaffolds_FINAL.fasta --out-dir ./gx_out_genomeHiC_final/ --gx-db ./gxdb --tax-id 220382 
+
+# FCS-adaptor (look for adaptor sequences)
+./run_fcsadaptor.sh --fasta-input ./inputdir/scaffolds_FINAL.fasta --output-dir ./outputdir --euk
+
+
+# Infoseq information on old vs new genome
+
+Conda activate emboss
+
+infoseq /large/whelk/genome/FCS_WHELK_DECONTAMINATION_OCT272023/fcsadaptor/old_genome/clean_final_scaf.fasta -outfile /large/whelk/genome/FCS_WHELK_DECONTAMINATION_OCT272023/fcsadaptor/old_genome/old
+
+infoseq /large/whelk/genome/FCS_WHELK_DECONTAMINATION_OCT272023/fcsadaptor/outputdir/cleaned_sequences/scaffolds_FINAL.fasta -outfile /large/whelk/genome/FCS_WHELK_DECONTAMINATION_OCT272023/fcsadaptor/new_genome
+
